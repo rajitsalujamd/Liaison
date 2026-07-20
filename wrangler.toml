@@ -1,0 +1,10 @@
+# Tells Cloudflare Workers this project is a static site — no server code to run,
+# just files to serve. Without this, `npx wrangler deploy` looks for a Worker
+# script, finds none, and fails.
+
+name = "liaison"
+compatibility_date = "2026-07-19"
+
+[assets]
+directory = "."
+not_found_handling = "single-page-application"
