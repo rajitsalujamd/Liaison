@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Liaison — Learn French by building sentences</title>
+<meta name="description" content="Understand how a French sentence is built before you memorise words. Six lessons, in real Paris scenes.">
+<meta name="theme-color" content="#14100D">
+<style>
+:root{
+  color-scheme: light dark;
+  --display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s8:48px; --s10:64px;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:9999px;
+  --fast:120ms; --normal:220ms; --slow:360ms;
+
+  --bg:#F6EFE4; --bg-2:#EFE5D6; --surface:#FFFCF7;
+  --border:#E0D2BC; --border-strong:#B09772;
+  --text:#241B13; --text-2:#584A3B; --muted:#7A6853;
+  --cta:#A8432A; --cta-ink:#FFFFFF; --gold:#9A6E1E;
+  --subject:#2F5480; --verb:#A8432A; --object:#1B6B52; --extra:#6B4E8C;
+  --success:#1B6B52; --danger:#A8432A;
+  --scrim-1:rgba(20,16,13,.20); --scrim-2:rgba(20,16,13,.78);
+  --shadow-sm:0 1px 2px rgba(36,27,19,.07);
+  --shadow-md:0 4px 14px rgba(36,27,19,.10);
+  --shadow-lg:0 14px 40px rgba(36,27,19,.16);
+}
+html[data-theme="dark"]{
+  --bg:#14100D; --bg-2:#1A1512; --surface:#1F1915;
+  --border:#3A2E25; --border-strong:#7A6350;
+  --text:#F4ECE1; --text-2:#CBB9A5; --muted:#A08D78;
+  --cta:#E08055; --cta-ink:#1A120C; --gold:#D8AC5A;
+  --subject:#89B5E6; --verb:#EE9269; --object:#66D6B0; --extra:#C4A2E8;
+  --success:#66D6B0; --danger:#EE9269;
+  --scrim-1:rgba(10,7,5,.34); --scrim-2:rgba(10,7,5,.86);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.5);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 16px 44px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;color:inherit;touch-action:manipulation}
+:where(a,button,[tabindex]):focus-visible{outline:2px solid var(--cta);outline-offset:2px}
+html[data-theme="dark"] :where(a,button,[tabindex]):focus-visible{outline-color:var(--gold)}
+:where(h1,h2,h3)[tabindex="-1"]:focus,:where(h1,h2,h3)[tabindex="-1"]:focus-visible{outline:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:var(--s4);top:-100px;z-index:100;background:var(--surface);
+  color:var(--text);border:2px solid var(--cta);padding:var(--s3) var(--s4);
+  border-radius:var(--r-md);font-weight:700;text-decoration:none;transition:top var(--fast) ease}
+.skip:focus{top:var(--s4)}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:var(--bg);
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border)}
+.topbar-in{max-width:1180px;margin:0 auto;
+  padding:var(--s3) max(var(--s4),env(safe-area-inset-right)) var(--s3) max(var(--s4),env(safe-area-inset-left));
+  display:flex;align-items:center;gap:var(--s3)}
+.brand{font-family:var(--display);font-size:clamp(1.1rem,1rem + .5vw,1.35rem);
+  font-weight:700;display:flex;align-items:center;gap:var(--s2);flex-shrink:0;
+  background:none;border:0;padding:0}
+.brand .dot{width:9px;height:9px;border-radius:var(--r-full);background:var(--cta);flex-shrink:0}
+.topbar-meta{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
+.pill{font-size:.8rem;font-weight:700;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-full);padding:var(--s2) var(--s3);white-space:nowrap;color:var(--text-2);
+  display:inline-flex;align-items:center;gap:6px;transition:transform var(--fast) ease}
+.pill b{color:var(--text);font-variant-numeric:tabular-nums}
+.pill.bump{animation:bump var(--slow) ease}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+.icon-btn{width:44px;height:44px;flex-shrink:0;display:inline-flex;align-items:center;
+  justify-content:center;background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:var(--r-full);transition:border-color var(--fast) ease,transform var(--fast) ease}
+.icon-btn:hover{border-color:var(--cta)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+.rail{height:4px;background:var(--bg-2);position:relative;overflow:hidden}
+.rail>i{display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--subject),var(--cta),var(--gold));
+  transition:width var(--slow) cubic-bezier(.4,0,.2,1)}
+
+.view{display:none}
+.view.on{display:block;animation:viewIn var(--slow) cubic-bezier(.2,.7,.3,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:min(86vh,720px);display:flex;align-items:flex-end;
+  overflow:hidden;isolation:isolate}
+.hero-layer{position:absolute;inset:-6% 0 -6% 0;z-index:-2;background-size:cover;
+  background-position:center 40%;will-change:transform}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,var(--scrim-1) 0%,rgba(0,0,0,0) 28%,var(--scrim-2) 78%,var(--scrim-2) 100%)}
+.hero-in{position:relative;width:100%;max-width:1180px;margin:0 auto;
+  padding:var(--s10) var(--s4) var(--s8);color:#FBF4EA}
+.hero-copy{max-width:min(92%,600px)}
+.eyebrow{display:inline-flex;align-items:center;gap:var(--s2);font-size:.72rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.14em;background:rgba(251,244,234,.12);
+  border:1px solid rgba(251,244,234,.32);color:#FBF4EA;padding:6px var(--s3);
+  border-radius:var(--r-full);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hero h1{font-family:var(--display);font-size:clamp(2.1rem,1.3rem + 4.2vw,3.9rem);
+  line-height:1.06;font-weight:700;margin:var(--s4) 0 var(--s3);letter-spacing:-.015em;
+  text-wrap:balance;text-shadow:0 2px 24px rgba(0,0,0,.5)}
+.hero h1 em{font-style:italic;color:var(--gold);filter:brightness(1.4)}
+.hero .sub{font-size:clamp(1rem,.95rem + .3vw,1.2rem);color:rgba(251,244,234,.88);
+  max-width:52ch;margin:0 0 var(--s5);text-shadow:0 1px 14px rgba(0,0,0,.55)}
+.hero-cta{display:flex;flex-direction:column;gap:var(--s3);align-items:flex-start}
+.hero-note{font-size:.85rem;color:rgba(251,244,234,.74);display:flex;align-items:center;gap:var(--s2)}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
+  min-height:52px;padding:var(--s3) var(--s6);background:var(--cta);color:var(--cta-ink);
+  border:2px solid transparent;border-radius:var(--r-md);font-size:1.02rem;font-weight:700;
+  box-shadow:var(--shadow-md);
+  transition:transform var(--fast) ease,filter var(--fast) ease,box-shadow var(--fast) ease}
+.btn:hover{filter:brightness(1.08);box-shadow:var(--shadow-lg)}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.4;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+.btn.secondary{background:transparent;color:var(--cta);border-color:var(--cta);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--text-2);border-color:var(--border-strong);
+  box-shadow:none;min-height:48px;padding:var(--s3) var(--s5)}
+.btn.ghost:hover{border-color:var(--cta);color:var(--text)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+/* ---------- sections ---------- */
+.section{max-width:1180px;margin:0 auto;padding:var(--s10) var(--s4)}
+.kicker{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--muted);margin:0 0 var(--s2)}
+h2{font-family:var(--display);font-size:clamp(1.55rem,1.2rem + 1.6vw,2.3rem);line-height:1.15;
+  font-weight:700;margin:0 0 var(--s3);letter-spacing:-.01em;text-wrap:balance}
+h3{font-family:var(--display);font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem);line-height:1.25;
+  font-weight:700;margin:0 0 var(--s2)}
+.lede{font-size:1.05rem;color:var(--text-2);max-width:62ch;margin:0}
+
+/* ---------- lesson map ---------- */
+.map{display:grid;gap:var(--s4);grid-template-columns:1fr;margin-top:var(--s6)}
+.lcard{display:flex;gap:var(--s4);align-items:stretch;text-align:left;width:100%;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:var(--shadow-sm);padding:0;
+  transition:transform var(--normal) ease,box-shadow var(--normal) ease,border-color var(--normal) ease}
+.lcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--border-strong)}
+.lcard .thumb{width:110px;flex-shrink:0;object-fit:cover;background:var(--bg-2);align-self:stretch}
+.lcard .meta{padding:var(--s4);flex:1;min-width:0}
+.lcard .n{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--muted);display:block}
+.lcard .t{font-family:var(--display);font-size:1.2rem;font-weight:700;margin:2px 0 4px;
+  line-height:1.2}
+.lcard .fr{font-size:.9rem;color:var(--text-2);margin:0;display:block}
+.lcard .tick{color:var(--success);font-weight:800;font-size:.78rem;
+  text-transform:uppercase;letter-spacing:.1em;margin-top:var(--s2);display:block}
+.lcard.done{border-left:4px solid var(--success)}
+
+/* ---------- lesson player ---------- */
+.banner{position:relative;height:clamp(150px,24vw,240px);overflow:hidden;isolation:isolate}
+.banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:center 45%;z-index:-2}
+.banner::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(10,7,5,.26),var(--scrim-2))}
+.banner .in{max-width:1180px;margin:0 auto;height:100%;padding:var(--s4);
+  display:flex;flex-direction:column;justify-content:flex-end;color:#FBF4EA}
+.banner .place{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;
+  color:rgba(251,244,234,.8);margin:0 0 2px}
+.banner h1{font-family:var(--display);font-size:clamp(1.4rem,1.15rem + 1.4vw,2.1rem);
+  margin:0;font-weight:700;text-shadow:0 2px 18px rgba(0,0,0,.55)}
+
+/* scroll-margin-top keeps scrollIntoView from parking this under the
+   sticky topbar, which was hiding — and swallowing clicks on — the Back button */
+.stage{max-width:760px;margin:0 auto;padding:var(--s5) var(--s4) var(--s10);
+  scroll-margin-top:92px}
+.stage-back{
+  display:inline-flex;align-items:center;gap:8px;
+  min-height:44px;padding:var(--s2) var(--s4) var(--s2) var(--s3);
+  margin:0 0 var(--s4) 0;
+  background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:var(--r-full);
+  color:var(--text);font-size:.92rem;font-weight:700;
+  transition:border-color var(--fast) ease,background var(--fast) ease}
+.stage-back:hover{border-color:var(--cta);background:var(--bg-2)}
+.stage-back:active{transform:scale(.97)}
+.stage-back .hint{font-weight:600;color:var(--muted);font-size:.85rem}
+.stage-back .hint:not(:empty)::before{content:"· "}
+.stage-back{position:relative;z-index:41}   /* never behind the sticky bar */
+.stage-back svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+.steps{display:flex;gap:6px;align-items:center;margin-bottom:var(--s5);flex-wrap:wrap}
+.steps i{width:28px;height:5px;border-radius:var(--r-full);background:var(--bg-2);
+  border:1px solid var(--border);transition:background var(--normal) ease}
+.steps i.done{background:var(--object);border-color:var(--object)}
+.steps i.now{background:var(--cta);border-color:var(--cta)}
+.steps .label{margin-left:var(--s2);font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:var(--s5);box-shadow:var(--shadow-sm)}
+.card + .card{margin-top:var(--s4)}
+.hint-copy{color:var(--text-2);margin:0 0 var(--s4);font-size:.96rem;max-width:60ch}
+.scene-line{font-family:var(--display);font-size:clamp(1.15rem,1.05rem + .6vw,1.5rem);
+  line-height:1.35;margin:0;color:var(--text-2);font-style:italic}
+
+/* frame display */
+.frame-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:var(--s5);text-align:center;margin:var(--s4) 0 0}
+.frame-fr{font-family:var(--display);font-size:clamp(1.5rem,1.2rem + 1.6vw,2.2rem);
+  font-weight:700;margin:0;line-height:1.2}
+.frame-en{color:var(--muted);margin:var(--s2) 0 0;font-size:.98rem}
+.blank{color:var(--cta);letter-spacing:.05em}
+
+/* the sound table */
+.sound{width:100%;border-collapse:collapse;margin:var(--s4) 0 0;font-size:.95rem}
+.sound th{text-align:left;font-size:.68rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.11em;color:var(--muted);padding:0 var(--s3) var(--s2) 0;border-bottom:1px solid var(--border)}
+.sound td{padding:var(--s2) var(--s3) var(--s2) 0;border-bottom:1px solid var(--border);vertical-align:top}
+.sound td:first-child{font-family:var(--display);font-weight:700;font-size:1.05rem}
+.sound tr.same td:last-child{color:var(--object);font-weight:700}
+.sound td:last-child{color:var(--text-2)}
+
+.callout{border-left:4px solid var(--gold);background:var(--bg);padding:var(--s4);
+  border-radius:0 var(--r-md) var(--r-md) 0;margin:var(--s4) 0 0}
+.callout p{margin:0;font-size:.96rem;color:var(--text-2)}
+.callout p + p{margin-top:var(--s2)}
+.callout b{color:var(--text)}
+
+/* vocab rows */
+.vocab{display:flex;flex-direction:column;gap:var(--s2);margin:var(--s4) 0 0}
+.vrow{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);
+  background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--g,var(--border-strong));
+  border-radius:var(--r-md)}
+.vrow .fr{font-family:var(--display);font-size:1.15rem;font-weight:700;min-width:7.5ch;color:var(--g,var(--text))}
+.vrow .en{flex:1;min-width:0;font-size:.98rem;color:var(--text-2)}
+.vrow .say{font-size:.78rem;color:var(--muted);font-style:italic;margin-right:var(--s2);white-space:nowrap}
+.vrow.m{--g:var(--subject)}
+.vrow.f{--g:var(--verb)}
+.vrow.n{--g:var(--muted)}
+@media (max-width:520px){
+  .vrow{flex-wrap:wrap}
+  .vrow .en{flex:1 1 100%;order:3}
+  .vrow .say{order:2}
+}
+.gender-key{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:var(--s3)}
+.gender-key span{display:inline-flex;align-items:center;gap:6px}
+.gender-key i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* flashcards */
+.cards-grid{display:grid;gap:var(--s3);grid-template-columns:1fr;margin:var(--s4) 0 0}
+.fcard{background:var(--bg);border:2px solid var(--border);border-radius:var(--r-md);
+  overflow:hidden;text-align:left;padding:0;width:100%;
+  transition:border-color var(--fast) ease,transform var(--fast) ease}
+.fcard:hover{border-color:var(--cta)}
+.fcard:active{transform:scale(.985)}
+.fcard.heard{border-color:var(--object)}
+.fcard img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.fcard .cap{padding:var(--s3) var(--s4);display:flex;align-items:center;gap:var(--s3)}
+.fcard .cf{font-family:var(--display);font-size:1.15rem;font-weight:700}
+.fcard .ce{font-size:.9rem;color:var(--text-2);flex:1}
+.fcard .spk{width:36px;height:36px;flex-shrink:0;border-radius:var(--r-full);
+  border:1.5px solid var(--border-strong);display:inline-flex;align-items:center;justify-content:center}
+.fcard .spk svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+.fcard.heard .spk{border-color:var(--object);color:var(--object)}
+
+/* build */
+.slots{display:flex;flex-wrap:wrap;gap:var(--s2);min-height:76px;align-items:center;
+  padding:var(--s3);border:2px dashed var(--border-strong);border-radius:var(--r-md);
+  background:var(--bg);transition:border-color var(--normal) ease,background var(--normal) ease}
+.slots.good{border-color:var(--object);border-style:solid;background:var(--bg-2);
+  background:color-mix(in srgb,var(--object) 9%,var(--bg))}
+.slots.bad{border-color:var(--danger);border-style:solid;background:var(--bg-2);
+  background:color-mix(in srgb,var(--danger) 9%,var(--bg))}
+.slots.shake{animation:shake var(--slow) ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}
+  40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.slots .empty{color:var(--muted);font-size:.92rem;padding:0 var(--s2)}
+.tile{min-height:48px;padding:var(--s3) var(--s4);background:var(--surface);
+  border:2px solid var(--border-strong);border-radius:var(--r-md);font-family:var(--display);
+  font-size:1.1rem;font-weight:700;box-shadow:var(--shadow-sm);
+  transition:transform var(--fast) ease,border-color var(--fast) ease,opacity var(--normal) ease}
+.tile:hover{border-color:var(--cta)}
+.tile:active{transform:scale(.95)}
+.tile.placed{background:var(--bg-2);box-shadow:none;border-color:var(--r,var(--border));color:var(--r,var(--text))}
+.tile.spent{opacity:.26;pointer-events:none}
+.tile.t-subject{--r:var(--subject)}
+.tile.t-verb{--r:var(--verb)}
+.tile.t-object{--r:var(--object)}
+.tile.t-extra{--r:var(--extra)}
+.bank{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s4) 0 0}
+.bank-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--muted);margin:var(--s4) 0 var(--s2)}
+.target{font-size:.95rem;color:var(--text-2);margin:0 0 var(--s3);font-style:italic}
+.feedback{margin:var(--s4) 0 0;min-height:24px;font-size:.97rem;font-weight:600;
+  display:flex;align-items:flex-start;gap:var(--s2)}
+.feedback.ok{color:var(--success)}
+.feedback.no{color:var(--danger)}
+.feedback svg{width:20px;height:20px;flex-shrink:0;margin-top:2px;stroke:currentColor;
+  stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* respond */
+.prompt{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:var(--s4);margin:var(--s4) 0 0}
+.prompt .q{font-family:var(--display);font-size:clamp(1.15rem,1.05rem + .6vw,1.5rem);
+  font-weight:700;margin:0;flex:1;min-width:0}
+.opts{display:flex;flex-direction:column;gap:var(--s2);margin:var(--s4) 0 0}
+.opt{width:100%;text-align:left;background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--r-md);padding:var(--s3) var(--s4);min-height:52px;
+  font-size:1.02rem;font-weight:600;
+  transition:border-color var(--fast) ease,background var(--fast) ease}
+.opt:hover{border-color:var(--cta)}
+.opt.right{border-color:var(--object);background:var(--bg-2);
+  background:color-mix(in srgb,var(--object) 8%,var(--surface))}
+.opt.wrong{border-color:var(--danger);background:var(--bg-2);
+  background:color-mix(in srgb,var(--danger) 8%,var(--surface))}
+.opt[disabled]{opacity:1;pointer-events:none}
+
+/* story */
+.lines{display:flex;flex-direction:column;gap:var(--s3);margin:var(--s4) 0 0;padding:var(--s4);
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md)}
+.line{margin:0;font-family:var(--display);font-size:clamp(1.02rem,1rem + .35vw,1.2rem);line-height:1.4}
+.line .who{display:block;font-family:var(--body);font-size:.68rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:2px}
+.line .en{display:block;font-family:var(--body);font-size:.85rem;color:var(--muted);margin-top:2px}
+.line.you{color:var(--cta)}
+.line.you .who{color:var(--cta)}
+.line.saying{background:var(--bg-2);border-radius:var(--r-sm);box-shadow:0 0 0 var(--s2) var(--bg-2)}
+
+/* speak buttons */
+.speak{width:48px;height:48px;flex-shrink:0;display:inline-flex;align-items:center;
+  justify-content:center;background:var(--surface);border:2px solid var(--border-strong);
+  border-radius:var(--r-full);
+  transition:border-color var(--fast) ease,transform var(--fast) ease,background var(--fast) ease}
+.speak:hover{border-color:var(--cta)}
+.speak:active{transform:scale(.92)}
+.speak.playing{border-color:var(--cta);background:var(--bg-2);
+  background:color-mix(in srgb,var(--cta) 12%,transparent)}
+.speak svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+.speak.sm{width:40px;height:40px}
+.speak.sm svg{width:16px;height:16px}
+
+.actions{display:flex;gap:var(--s3);flex-wrap:wrap;margin:var(--s5) 0 0;align-items:center}
+
+/* done */
+.win{border-color:var(--object);background:var(--surface);
+  background:color-mix(in srgb,var(--object) 6%,var(--surface))}
+.crest{font-family:var(--display);font-size:clamp(1.5rem,1.2rem + 1.4vw,2.1rem);
+  line-height:1.25;margin:0 0 var(--s3);color:var(--object);font-weight:700}
+.win-stats{display:flex;gap:var(--s3);flex-wrap:wrap;margin:var(--s4) 0}
+.stat{flex:1;min-width:104px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:var(--s3) var(--s4)}
+.stat .n{font-family:var(--display);font-size:1.6rem;font-weight:700;line-height:1;display:block;
+  font-variant-numeric:tabular-nums}
+.stat .k{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.11em;color:var(--muted)}
+
+/* ---------- celebration ---------- */
+@keyframes riseIn{
+  0%{opacity:0;transform:translateY(18px) scale(.96)}
+  60%{opacity:1;transform:translateY(-3px) scale(1.01)}
+  100%{opacity:1;transform:none}}
+@keyframes glowPulse{
+  0%{box-shadow:0 0 0 0 rgba(154,110,30,.45)}
+  70%{box-shadow:0 0 0 22px rgba(154,110,30,0)}
+  100%{box-shadow:0 0 0 0 rgba(154,110,30,0)}}
+@keyframes sweep{
+  0%{background-position:-140% 0}
+  100%{background-position:240% 0}}
+.win{animation:riseIn var(--slow) cubic-bezier(.2,.8,.3,1)}
+.win .crest{
+  background-image:linear-gradient(100deg,
+    var(--object) 0%, var(--object) 38%, var(--gold) 50%, var(--object) 62%, var(--object) 100%);
+  background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:sweep 1.5s ease-out .25s 1 both}
+.win-stats .stat{animation:riseIn var(--slow) cubic-bezier(.2,.8,.3,1) both}
+.win-stats .stat:nth-child(1){animation-delay:.10s}
+.win-stats .stat:nth-child(2){animation-delay:.20s}
+.win-stats .stat:nth-child(3){animation-delay:.30s}
+.new-badges .badge{animation:riseIn var(--slow) cubic-bezier(.2,.8,.3,1) both,
+                             glowPulse 1.4s ease-out .35s 1 both}
+@media (prefers-reduced-motion:reduce){
+  .win,.win .crest,.win-stats .stat,.new-badges .badge{animation:none !important}
+  .win .crest{-webkit-text-fill-color:var(--object);color:var(--object)}
+}
+
+/* the pull: how much is left, stated as something unfinished */
+.stakes{
+  display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--border);
+  border-left:4px solid var(--gold);
+  border-radius:var(--r-md);padding:var(--s4);margin-top:var(--s5)}
+.stakes .ring{position:relative;width:58px;height:58px;flex-shrink:0}
+.stakes .ring svg{transform:rotate(-90deg)}
+.stakes .ring circle{fill:none;stroke-width:6}
+.stakes .ring .bg{stroke:var(--bg-2)}
+.stakes .ring .fg{stroke:var(--gold);stroke-linecap:round;
+  transition:stroke-dashoffset var(--slow) cubic-bezier(.4,0,.2,1)}
+.stakes .ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:800;font-variant-numeric:tabular-nums}
+.stakes .say{flex:1;min-width:200px}
+.stakes .say p{margin:0}
+.stakes .say .big{font-family:var(--display);font-size:1.15rem;font-weight:700;line-height:1.3}
+.stakes .say .sub{font-size:.9rem;color:var(--text-2);margin-top:2px}
+
+/* ---------- badges ---------- */
+.shelf{margin-top:var(--s6)}
+.shelf h3{margin-bottom:var(--s2)}
+.shelf-note{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--muted);margin:0 0 var(--s3)}
+.badges{display:grid;gap:var(--s3);grid-template-columns:repeat(2,1fr)}
+.badge{display:flex;gap:var(--s3);align-items:flex-start;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:var(--s3) var(--s4);transition:border-color var(--normal) ease}
+.badge.locked{opacity:.5}
+.badge.won{border-color:var(--gold);border-left:4px solid var(--gold)}
+.badge .ico{width:34px;height:34px;flex-shrink:0;border-radius:var(--r-full);
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--bg-2);color:var(--muted)}
+.badge.won .ico{background:var(--gold);color:var(--cta-ink)}
+html[data-theme="dark"] .badge.won .ico{color:#1A120C}
+.badge .ico svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+.badge .bt{font-family:var(--display);font-weight:700;font-size:1rem;margin:0;line-height:1.2}
+.badge .bd{font-size:.85rem;color:var(--text-2);margin:2px 0 0}
+.badge .bs{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--gold);margin:4px 0 0;display:block}
+.new-badges{margin:var(--s4) 0 0}
+.new-badges .badge{background:var(--bg)}
+@media (min-width:900px){ .badges{grid-template-columns:repeat(4,1fr)} }
+@media (max-width:520px){ .badges{grid-template-columns:1fr} }
+
+footer{border-top:1px solid var(--border);padding:var(--s6) var(--s4);text-align:center;
+  color:var(--muted);font-size:.88rem}
+footer p{margin:0 auto;max-width:60ch}
+
+@media (min-width:640px){
+  .cards-grid{grid-template-columns:repeat(3,1fr)}
+  .fcard img{aspect-ratio:4/3}
+}
+@media (min-width:768px){
+  .map{grid-template-columns:repeat(2,1fr)}
+  .hero-cta{flex-direction:row;align-items:center;gap:var(--s5)}
+  .lcard .thumb{width:132px}
+}
+@media (min-width:1024px){
+  .section{padding:var(--s10) var(--s5)}
+  .hero-in{padding:var(--s10) var(--s5) var(--s10)}
+  .hero-copy{max-width:min(58%,760px)}
+  .map{grid-template-columns:repeat(3,1fr)}
+  .lcard{flex-direction:column}
+  .lcard .thumb{width:100%;aspect-ratio:16/9;align-self:auto}
+  .stage{padding:var(--s6) var(--s5) var(--s10);scroll-margin-top:100px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;scroll-behavior:auto !important}
+  .hero-layer{transform:none !important}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <button class="brand" id="brandBtn" aria-label="Back to the start">
+      <span class="dot" aria-hidden="true"></span>Liaison
+    </button>
+    <div class="topbar-meta">
+      <span class="pill" id="pillXp"><b id="xpNum">0</b> XP<span class="sr-only"> earned</span></span>
+      <span class="pill"><b id="streakNum">1</b> day</span>
+      <button class="icon-btn" id="muteBtn" aria-label="Mute sounds">
+        <svg viewBox="0 0 24 24" aria-hidden="true" id="muteIcon"></svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" aria-label="Switch to dark theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true" id="themeIcon"></svg>
+      </button>
+    </div>
+  </div>
+  <div class="rail"><i id="railFill"></i></div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- ============ LANDING ============ -->
+<section class="view on" id="viewLanding" aria-labelledby="heroTitle">
+  <div class="hero">
+    <div class="hero-layer" id="heroLayer" role="img"
+         aria-label="A Paris cafe terrace at dusk, bistro chairs under warm string lights"></div>
+    <div class="hero-in">
+      <div class="hero-copy">
+        <span class="eyebrow">French, from the sentence up</span>
+        <h1 id="heroTitle">Build your first French sentence <em>tonight</em>.</h1>
+      </div>
+      <p class="sub">Most apps hand you words with nowhere to put them. Liaison starts with the shape of the sentence, so the words have somewhere to land.</p>
+      <div class="hero-cta">
+        <button class="btn" id="startBtn">
+          <span id="startLabel">Start Lesson 1</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <span class="hero-note">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Six lessons. No account.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="kicker">The scenes</p>
+    <h2>Six places, six things you can say.</h2>
+    <p class="lede">Each lesson happens somewhere real and teaches one sentence pattern. Finish them in order — every lesson leans on the one before it.</p>
+    <div class="stakes" id="stakes" hidden></div>
+    <div class="map" id="lessonMap"></div>
+
+    <div class="shelf">
+      <h3>Kept it up</h3>
+      <p class="shelf-note">Earned by coming back</p>
+      <div class="badges" id="badgesHabit"></div>
+    </div>
+
+    <div class="shelf">
+      <h3>Got it right</h3>
+      <p class="shelf-note">Earned by getting it right</p>
+      <div class="badges" id="badgesSkill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LESSON ============ -->
+<section class="view" id="viewLesson" aria-labelledby="lessonTitle">
+  <div class="banner">
+    <img id="bannerImg" src="" alt="">
+    <div class="in">
+      <p class="place" id="bannerPlace"></p>
+      <h1 id="lessonTitle"></h1>
+    </div>
+  </div>
+  <div class="stage">
+    <button class="stage-back" id="stageBack">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      <span id="stageBackLabel">Back</span>
+      <span class="hint" id="stageBackHint"></span>
+    </button>
+    <div class="steps" role="status" aria-live="polite">
+      <i id="s0"></i><i id="s1"></i><i id="s2"></i><i id="s3"></i><i id="s4"></i><i id="s5"></i>
+      <span class="label" id="stepLabel"></span>
+    </div>
+    <div id="stageBody"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Liaison keeps your progress on this device only. Nothing is uploaded, and there is no account to make.</p>
+</footer>
+
+<script>
+"use strict";
+
+/* ============================================================
+   CONTENT — six lessons
+   Photos marked below are ones I have actually viewed.
+   ============================================================ */
+var LESSONS = [
+{
+  id:1, place:"Dans la rue", title:"Vous parlez anglais ?",
+  photo:"IMG_6295.jpeg",
+  alt:"A Haussmann street in Paris running away from the viewer",
+  sceneLine:"You have just arrived. Before anything else, you need to find out whether the person in front of you speaks your language.",
+  frame:{fr:"___ parle ___", en:"___ speak(s) ___"},
+  headline:{
+    title:"Four of these six sound identical",
+    body:["The endings you see written — <b>-e</b>, <b>-es</b>, <b>-ent</b> — are silent. You are learning three sounds, not six forms.",
+          "About 90% of French verbs behave exactly like this one. Learn the pattern once and it keeps paying."],
+    table:[["je parle","parl",1],["tu parles","parl",1],["il / elle parle","parl",1],
+           ["ils / elles parlent","parl",1],["nous parlons","par-LON",0],["vous parlez","par-LAY",0]]
+  },
+  vocab:[
+    {fr:"je",en:"I",say:"zhuh",g:"n"},
+    {fr:"tu",en:"you — one person you know",say:"too",g:"n"},
+    {fr:"il / elle",en:"he / she",say:"eel / ell",g:"n"},
+    {fr:"nous",en:"we",say:"noo",g:"n"},
+    {fr:"vous",en:"you — polite, or more than one",say:"voo",g:"n"},
+    {fr:"ils / elles",en:"they — mixed / all women",say:"eel / ell",g:"n"},
+    {fr:"parler",en:"to speak",say:"par-LAY",g:"n"}
+  ],
+  note:{title:"tu or vous — this one matters",
+    body:["<b>vous</b> for anyone you do not know. Waiters, shopkeepers, strangers, anyone older, anyone at all in a professional setting. When in doubt, <i>vous</i>.",
+          "<b>tu</b> for friends, family, children, and people who have invited you to.",
+          "English lost this distinction four hundred years ago. French kept it, and it still carries weight. As a visitor you will use <i>vous</i> almost every time, and nobody will ever be offended by it."]},
+  cards:[
+    {fr:"je",en:"I",photo:null},
+    {fr:"vous",en:"you (polite)",photo:null},
+    {fr:"nous parlons",en:"we speak",photo:null}
+  ],
+  builds:[
+    {en:"I speak English.",tiles:[{fr:"Je",r:"subject"},{fr:"parle",r:"verb"},{fr:"anglais",r:"object"}]},
+    {en:"Do you speak English?",tiles:[{fr:"Vous",r:"subject"},{fr:"parlez",r:"verb"},{fr:"anglais",r:"object"}],
+     after:"You did not add a word to make that a question. French lets your voice do it — the pitch rises at the end. Every statement you learn here is already a question, for free."},
+    {en:"I speak a little French.",tiles:[{fr:"Je",r:"subject"},{fr:"parle",r:"verb"},{fr:"un peu",r:"extra"},{fr:"français",r:"object"}]}
+  ],
+  respond:{q:"Bonjour ! Vous parlez français ?",en:"Hello! Do you speak French?",
+    opts:[
+      {fr:"Je parle un peu français.",ok:true},
+      {fr:"Vous parlez anglais ?",ok:false,why:"Reasonable instinct — but you answered a question with a question. Try telling them what you can do."},
+      {fr:"Nous parlons.",ok:false,why:"Correctly formed, but it does not say anything yet. French wants to know what you speak."}
+    ]},
+  story:[
+    {who:"Une passante",fr:"Bonjour ! Vous parlez français ?",en:"Hello! Do you speak French?"},
+    {who:"Vous",fr:"Je parle un peu français. Vous parlez anglais ?",en:"I speak a little French. Do you speak English?",you:true},
+    {who:"Une passante",fr:"Oui, un peu.",en:"Yes, a little."}
+  ],
+  close:"That is the most useful exchange you can carry into France. You can now find out, politely, whether you and a stranger have a language in common."
+},
+{
+  id:2, place:"Au café", title:"Je voudrais un café",
+  photo:"IMG_6237.jpeg",
+  alt:"A Paris cafe with pink and white striped awnings and people at outdoor tables",
+  sceneLine:"Someone is about to ask what you want.",
+  frame:{fr:"Je voudrais ___", en:"I would like ___"},
+  headline:{
+    title:"Learned whole, not taken apart",
+    body:["<b>voudrais</b> is an irregular form and you are not going to dismantle it today. It is the politest thing you can say in a French café, and it is learned in one piece, like a word.",
+          "Swap only the ending. The frame never moves."]
+  },
+  vocab:[
+    {fr:"un café",en:"a coffee",say:"uhn ka-FAY",g:"m"},
+    {fr:"un thé",en:"a tea",say:"uhn TAY",g:"m"},
+    {fr:"un croissant",en:"a croissant",say:"uhn krwah-SON",g:"m"},
+    {fr:"un jus d'orange",en:"an orange juice",say:"uhn zhoo do-RONZH",g:"m"},
+    {fr:"un sandwich",en:"a sandwich",say:"uhn son-DWEESH",g:"m"},
+    {fr:"l'addition",en:"the bill",say:"la-dee-SYON",g:"f"}
+  ],
+  note:{title:"un and une",
+    body:["<b>un</b> marks a masculine word, <b>une</b> a feminine one. You are not memorising which is which — the word and its article travel together as a pair, and you absorb them together.",
+          "Five of the six above are masculine. That is deliberate. The first noun lesson should not feel like something you can fail."]},
+  cards:[
+    {fr:"un café",en:"a coffee",photo:"IMG_6048.jpeg",alt:"A cup of coffee with leaf latte art"},
+    {fr:"un croissant",en:"a croissant",photo:"IMG_6410.jpeg",alt:"A Paris bakery window with a Croissants et Viennoiseries awning"},
+    {fr:"l'addition",en:"the bill",photo:"IMG_6576.jpeg",alt:"A laid restaurant table with wine glasses"}
+  ],
+  builds:[
+    {en:"I would like a coffee.",tiles:[{fr:"Je",r:"subject"},{fr:"voudrais",r:"verb"},{fr:"un café",r:"object"}]},
+    {en:"I would like a croissant.",tiles:[{fr:"Je",r:"subject"},{fr:"voudrais",r:"verb"},{fr:"un croissant",r:"object"}]},
+    {en:"I would like the bill, please.",tiles:[{fr:"Je",r:"subject"},{fr:"voudrais",r:"verb"},{fr:"l'addition",r:"object"},{fr:"s'il vous plaît",r:"extra"}],
+     after:"<b>s'il vous plaît</b> goes on the end and turns a request into a polite one. Look inside it — there is <i>vous</i>, from Lesson 1. It literally means 'if it pleases you'."}
+  ],
+  respond:{q:"Bonjour, vous désirez ?",en:"Hello, what would you like?",
+    opts:[
+      {fr:"Je voudrais un café, s'il vous plaît.",ok:true},
+      {fr:"Merci beaucoup.",ok:false,why:"'Thank you very much' — real French, but you would say it after, not now."},
+      {fr:"Je parle un peu français.",ok:false,why:"True, and useful. But they asked what you want, not how your French is."}
+    ]},
+  story:[
+    {who:"Le serveur",fr:"Bonjour, vous désirez ?",en:"Hello, what would you like?"},
+    {who:"Vous",fr:"Je voudrais un café et un croissant, s'il vous plaît.",en:"I would like a coffee and a croissant, please.",you:true},
+    {who:"Le serveur",fr:"Très bien.",en:"Very good."}
+  ],
+  close:"You can order in a French café. Swap the last piece and it still works: un thé, un jus d'orange, l'addition."
+},
+{
+  id:3, place:"À la boulangerie", title:"C'est une baguette",
+  photo:"IMG_6410.jpeg",
+  alt:"A Paris bakery front with an awning reading Croissants et Viennoiseries",
+  sceneLine:"A window full of bread. You want to say what you are looking at.",
+  frame:{fr:"C'est ___", en:"This is ___ / It's ___"},
+  headline:{
+    title:"You just used être without meeting a table",
+    body:["<b>C'est</b> is <i>ce</i> + <i>est</i> squeezed together — literally 'this is'. That <i>est</i> comes from <b>être</b>, French for 'to be', and it is the most irregular verb in the language.",
+          "You are using it now and learning the rest of it later, once it is the only new thing on the screen. That order is deliberate."]
+  },
+  vocab:[
+    {fr:"une boulangerie",en:"a bakery",say:"boo-lon-zhuh-REE",g:"f"},
+    {fr:"une baguette",en:"a baguette",say:"ba-GET",g:"f"},
+    {fr:"un gâteau",en:"a cake",say:"ga-TOH",g:"m"},
+    {fr:"une rue",en:"a street",say:"ROO",g:"f"},
+    {fr:"un magasin",en:"a shop",say:"ma-ga-ZAN",g:"m"},
+    {fr:"une terrasse",en:"a terrace",say:"teh-RASS",g:"f"},
+    {fr:"délicieux",en:"delicious",say:"day-lee-SYUH",g:"n"}
+  ],
+  note:{title:"Gender is met, not worked out",
+    body:["Lesson 2 was almost all <i>un</i>. This one flips mostly to <i>une</i>, so the difference stops being invisible.",
+          "<b>baguette</b> takes <i>une</i>. No rule would have told you that. This is one you meet rather than deduce, which is why the article always appears attached to the word."]},
+  cards:[
+    {fr:"une boulangerie",en:"a bakery",photo:"IMG_6410.jpeg",alt:"A Paris bakery facade"},
+    {fr:"une terrasse",en:"a terrace",photo:"IMG_6334.jpeg",alt:"A cafe terrace with bistro chairs under string lights"},
+    {fr:"une rue",en:"a street",photo:"IMG_6295.jpeg",alt:"A Haussmann street in Paris"}
+  ],
+  builds:[
+    {en:"It's a baguette.",tiles:[{fr:"C'est",r:"subject"},{fr:"une",r:"extra"},{fr:"baguette",r:"object"}]},
+    {en:"It's a cake.",tiles:[{fr:"C'est",r:"subject"},{fr:"un",r:"extra"},{fr:"gâteau",r:"object"}]},
+    {en:"It's delicious.",tiles:[{fr:"C'est",r:"subject"},{fr:"délicieux",r:"object"}],
+     after:"No article this time. Adjectives do not take one — the first hint that they behave differently from nouns."}
+  ],
+  respond:{q:"Qu'est-ce que c'est ?",en:"What is it?",
+    opts:[
+      {fr:"C'est une baguette.",ok:true},
+      {fr:"Je voudrais un café.",ok:false,why:"Still correct French, and still Lesson 2. But you were asked what something is, not what you want."},
+      {fr:"Elle parle français.",ok:false,why:"'She speaks French' — a fine sentence about a person, aimed at a question about an object."}
+    ]},
+  story:[
+    {who:"Un ami",fr:"Qu'est-ce que c'est ?",en:"What is it?"},
+    {who:"Vous",fr:"C'est un gâteau. C'est délicieux !",en:"It's a cake. It's delicious!",you:true}
+  ],
+  close:"C'est works on anything you can point at. It is the fastest way to make a sentence out of a single word."
+},
+{
+  id:4, place:"Le soir", title:"J'ai faim",
+  photo:"IMG_6428.jpeg",
+  alt:"A cafe window at dusk with a warm neon script sign glowing inside",
+  sceneLine:"It is evening and you have not eaten. Time to say so.",
+  frame:{fr:"J'ai ___", en:"I have ___"},
+  headline:{
+    title:"French has hunger. English is hungry.",
+    body:["<b>J'ai faim</b> does not mean 'I have hunger' in any way you would say it. It means <b>I'm hungry</b>. Same with <b>J'ai soif</b> — 'I'm thirsty'.",
+          "This is the first place French refuses to map onto English. It will not be the last, and it is the interesting part."]
+  },
+  vocab:[
+    {fr:"j'ai",en:"I have",say:"zhay",g:"n"},
+    {fr:"faim",en:"hunger → hungry",say:"fan",g:"n"},
+    {fr:"soif",en:"thirst → thirsty",say:"swaf",g:"n"},
+    {fr:"une table",en:"a table",say:"TAH-bluh",g:"f"},
+    {fr:"un menu",en:"a menu",say:"muh-NOO",g:"m"},
+    {fr:"une question",en:"a question",say:"kes-TYON",g:"f"},
+    {fr:"une réservation",en:"a reservation",say:"ray-zair-va-SYON",g:"f"}
+  ],
+  note:{title:"Why je became j'",
+    body:["<b>J'ai</b> is <i>je</i> + <i>ai</i>. The <i>e</i> vanished because French dislikes two vowel sounds colliding, so it drops one. This is called elision and it happens constantly.",
+          "Lesson 1 used <i>parler</i> partly to keep this out of your way — <i>je parle</i> stays whole because <i>p</i> is a consonant. Now that the pattern is solid, the exception can land."]},
+  cards:[
+    {fr:"une table",en:"a table",photo:"IMG_6576.jpeg",alt:"A laid restaurant table with wine glasses and flowers"},
+    {fr:"un menu",en:"a menu",photo:"IMG_6608.jpeg",alt:"A cafe counter with a menu board and stools"},
+    {fr:"un ami",en:"a friend",photo:"IMG_6193.jpeg",alt:"A Paris arcade with red cafe tables and chairs"}
+  ],
+  builds:[
+    {en:"I'm hungry.",tiles:[{fr:"J'ai",r:"subject"},{fr:"faim",r:"object"}]},
+    {en:"I have a question.",tiles:[{fr:"J'ai",r:"subject"},{fr:"une",r:"extra"},{fr:"question",r:"object"}]},
+    {en:"I have a reservation.",tiles:[{fr:"J'ai",r:"subject"},{fr:"une",r:"extra"},{fr:"réservation",r:"object"}]}
+  ],
+  respond:{q:"Vous avez une réservation ?",en:"Do you have a reservation?",
+    opts:[
+      {fr:"Oui, j'ai une réservation.",ok:true},
+      {fr:"C'est délicieux.",ok:false,why:"A good sentence, but not an answer to a yes-or-no question."},
+      {fr:"Je voudrais l'addition.",ok:false,why:"You have asked for the bill before sitting down. Understandable, but early."}
+    ],
+    after:"<b>Vous avez</b> is the same verb as your <i>j'ai</i>. You are not expected to produce that form yet — only to recognise it when it is pointed at you."},
+  story:[
+    {who:"Vous",fr:"J'ai faim !",en:"I'm hungry!",you:true},
+    {who:"Un ami",fr:"Moi aussi. Je voudrais un croissant.",en:"Me too. I'd like a croissant."}
+  ],
+  close:"Two of the hardest verbs in French, and you have been using both since Lesson 3 without noticing."
+},
+{
+  id:5, place:"Au marché", title:"Je cherche le marché",
+  photo:"IMG_6595.jpeg",
+  alt:"A bright yellow street food stand on a cobbled Paris corner",
+  sceneLine:"You are trying to find something, and you do not yet know the way.",
+  frame:{fr:"Je cherche ___", en:"I'm looking for ___"},
+  headline:{
+    title:"You already know this verb",
+    body:["<b>chercher</b> conjugates exactly like <i>parler</i>. Same endings, same silences. That is the whole reason it is here — Lesson 1 taught a pattern, and this is the pattern paying off.",
+          "Every regular <i>-er</i> verb you ever meet will do this. That is about nine verbs in ten."],
+    table:[["je cherche","shairsh",1],["tu cherches","shairsh",1],["il / elle cherche","shairsh",1],
+           ["ils / elles cherchent","shairsh",1],["nous cherchons","shair-SHON",0],["vous cherchez","shair-SHAY",0]]
+  },
+  vocab:[
+    {fr:"chercher",en:"to look for",say:"shair-SHAY",g:"n"},
+    {fr:"on",en:"we — what people actually say",say:"on",g:"n"},
+    {fr:"le marché",en:"the market",say:"mar-SHAY",g:"m"},
+    {fr:"la gare",en:"the station",say:"GAR",g:"f"},
+    {fr:"une fleur",en:"a flower",say:"FLUR",g:"f"},
+    {fr:"une carte",en:"a map",say:"KART",g:"f"},
+    {fr:"du fromage",en:"some cheese",say:"fro-MAZH",g:"m"}
+  ],
+  note:{title:"nous, or on",
+    body:["<b>on</b> means 'we' and takes the same form as <i>il</i>: <b>on cherche</b>.",
+          "You learned <i>nous</i> in Lesson 1 and it is correct. But in speech, French people say <i>on</i> almost every time. <b>Nous cherchons</b> is what you write. <b>On cherche</b> is what you say.",
+          "Both are right. One is what you will actually hear."]},
+  cards:[
+    {fr:"le marché",en:"the market",photo:"IMG_6595.jpeg",alt:"A yellow street food stand on a Paris corner"},
+    {fr:"une fleur",en:"a flower",photo:"IMG_6455.jpeg",alt:"A blue Paris hotel facade with flower boxes and trailing foliage"},
+    {fr:"un magasin",en:"a shop",photo:"IMG_6447.jpeg",alt:"A row of small Paris shopfronts on a quiet street"}
+  ],
+  builds:[
+    {en:"I'm looking for the market.",tiles:[{fr:"Je",r:"subject"},{fr:"cherche",r:"verb"},{fr:"le marché",r:"object"}]},
+    {en:"We're looking for the station.",tiles:[{fr:"On",r:"subject"},{fr:"cherche",r:"verb"},{fr:"la gare",r:"object"}],
+     after:"<b>On</b> takes the same verb form as <i>il</i> — no new ending to learn. That is a large part of why people reach for it."},
+    {en:"Are you looking for a map?",tiles:[{fr:"Vous",r:"subject"},{fr:"cherchez",r:"verb"},{fr:"une carte",r:"object"}]}
+  ],
+  respond:{q:"Vous cherchez quelque chose ?",en:"Are you looking for something?",
+    opts:[
+      {fr:"Oui, je cherche le marché.",ok:true},
+      {fr:"C'est délicieux.",ok:false,why:"They offered help, not food."},
+      {fr:"Je voudrais un café.",ok:false,why:"A fine sentence in a café. You are in the street."}
+    ]},
+  story:[
+    {who:"Un passant",fr:"Vous cherchez quelque chose ?",en:"Are you looking for something?"},
+    {who:"Vous",fr:"Oui, je cherche la gare.",en:"Yes, I'm looking for the station.",you:true},
+    {who:"Un passant",fr:"C'est tout droit.",en:"It's straight ahead."}
+  ],
+  close:"One pattern, two verbs, and the machinery is starting to show. Every new -er verb from here costs you almost nothing."
+},
+{
+  id:6, place:"À la terrasse", title:"C'est joli ici",
+  photo:"IMG_6334.jpeg",
+  alt:"A Paris cafe terrace at dusk with bistro chairs under warm string lights",
+  sceneLine:"You are sitting down and you want to say what the place is like.",
+  frame:{fr:"C'est ___", en:"It's ___ (describing)"},
+  headline:{
+    title:"The silent letter wakes up",
+    body:["Adjectives change to match the noun. In writing that means adding <b>-e</b>. In speech it means something more useful: <b>the final consonant is silent in the masculine and pronounced in the feminine</b>.",
+          "The <i>-e</i> makes no sound of its own. It wakes up the letter in front of it. Same class of trick as the silent verb endings in Lesson 1."],
+    table:[["petit → petite","puh-TEE → puh-TEET",1],["grand → grande","grahn → grahnd",1],
+           ["froid → froide","frwah → frwahd",1],["joli → jolie","zho-LEE → zho-LEE",0],
+           ["bon → bonne","bon → BUN",1],["cher → chère","shair → shair",0]]
+  },
+  vocab:[
+    {fr:"grand / grande",en:"big",say:"grahn / grahnd",g:"n"},
+    {fr:"petit / petite",en:"small",say:"puh-TEE / puh-TEET",g:"n"},
+    {fr:"joli / jolie",en:"pretty",say:"zho-LEE",g:"n"},
+    {fr:"bon / bonne",en:"good",say:"bon / BUN",g:"n"},
+    {fr:"cher / chère",en:"expensive",say:"SHAIR",g:"n"},
+    {fr:"chaud / chaude",en:"hot",say:"shoh / shohd",g:"n"},
+    {fr:"très",en:"very",say:"TRAY",g:"n"}
+  ],
+  note:{title:"Where the adjective sits — the honest version",
+    body:["<b>Most French adjectives come after the noun</b>: <i>un café noir</i>, <i>une rue calme</i>.",
+          "<b>A small group comes before</b> — and awkwardly, it is the common ones: big, small, pretty, good, young, old. <i>Une <b>petite</b> rue.</i> <i>Un <b>bon</b> café.</i>",
+          "Every adjective in this lesson is one of the exceptions. That is not an accident — they are the ones you need first. But most adjectives you meet later will sit on the other side of the noun, and it is better to know that now than to build the wrong habit."]},
+  cards:[
+    {fr:"grand",en:"big",photo:"IMG_6592.jpeg",alt:"A grand stone entrance with columns and a carved pediment"},
+    {fr:"petit",en:"small",photo:"IMG_6160.jpeg",alt:"A small carved wooden sign under the glass roof of a passage"},
+    {fr:"chaud",en:"hot",photo:"IMG_6048.jpeg",alt:"A hot coffee with latte art in a teal cup"}
+  ],
+  builds:[
+    {en:"It's a small street.",tiles:[{fr:"C'est",r:"subject"},{fr:"une",r:"extra"},{fr:"petite",r:"verb"},{fr:"rue",r:"object"}],
+     after:"<b>petite</b>, not <i>petit</i> — <i>rue</i> is feminine, so the adjective follows it. And now you hear the <i>t</i>."},
+    {en:"It's a good coffee.",tiles:[{fr:"C'est",r:"subject"},{fr:"un",r:"extra"},{fr:"bon",r:"verb"},{fr:"café",r:"object"}]},
+    {en:"It's very pretty.",tiles:[{fr:"C'est",r:"subject"},{fr:"très",r:"extra"},{fr:"joli",r:"verb"}]}
+  ],
+  respond:{q:"Le café, c'est bon ?",en:"The coffee — is it good?",
+    opts:[
+      {fr:"Oui, c'est très bon.",ok:true},
+      {fr:"Je cherche le marché.",ok:false,why:"They asked about the coffee in front of you."},
+      {fr:"C'est une rue.",ok:false,why:"Correct French, wrong subject entirely."}
+    ]},
+  story:[
+    {who:"Un ami",fr:"C'est joli ici.",en:"It's pretty here."},
+    {who:"Vous",fr:"Oui, c'est une très jolie terrasse. Et le café est bon.",en:"Yes, it's a very pretty terrace. And the coffee is good.",you:true}
+  ],
+  close:"Six lessons. You can order, say what things are, say what they are like, say you are hungry, and ask where something is going on. That is a real afternoon in Paris."
+}
+];
+
+/* ============================================================
+   state
+   ============================================================ */
+var memStore = {};
+var store = {
+  get:function(k){ try{ var v=localStorage.getItem(k); return v===null?(k in memStore?memStore[k]:null):v; }
+                   catch(e){ return k in memStore?memStore[k]:null; } },
+  set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){ memStore[k]=v; } }
+};
+var KEY="liaison.v2";
+function loadState(){
+  var raw=store.get(KEY);
+  var s={xp:0,streak:1,lastDay:null,done:{},badges:{},theme:null,muted:false};
+  if(raw){ try{ var p=JSON.parse(raw); for(var k in p) s[k]=p[k]; }catch(e){} }
+  if(!s.done) s.done={};
+  if(!s.badges) s.badges={};
+  return s;
+}
+function save(){ try{ store.set(KEY,JSON.stringify(state)); }catch(e){} }
+var state=loadState();
+
+function dayKey(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+(function(){
+  var now=new Date(), today=dayKey(now);
+  if(state.lastDay!==today){
+    var y=dayKey(new Date(now.getFullYear(),now.getMonth(),now.getDate()-1));
+    state.streak=(state.lastDay===y)?(state.streak||0)+1:1;
+    state.lastDay=today; save();
+  }
+})();
+
+/* ---------- theme ---------- */
+var SUN='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+var MOON='<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
+var themeBtn=document.getElementById("themeBtn"), themeIcon=document.getElementById("themeIcon");
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  themeIcon.innerHTML=(t==="dark")?SUN:MOON;
+  themeBtn.setAttribute("aria-label",t==="dark"?"Switch to light theme":"Switch to dark theme");
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m) m.setAttribute("content",t==="dark"?"#14100D":"#F6EFE4");
+}
+applyTheme(state.theme||((window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light"));
+themeBtn.addEventListener("click",function(){
+  var n=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
+  state.theme=n; save(); applyTheme(n);
+});
+
+/* mute */
+var SPK_ON='<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/>';
+var SPK_OFF='<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/>';
+var muteBtn=document.getElementById("muteBtn"), muteIcon=document.getElementById("muteIcon");
+function applyMute(){
+  muteIcon.innerHTML=state.muted?SPK_OFF:SPK_ON;
+  muteBtn.setAttribute("aria-label",state.muted?"Turn sounds on":"Mute sounds");
+  muteBtn.setAttribute("aria-pressed",state.muted?"true":"false");
+}
+applyMute();
+muteBtn.addEventListener("click",function(){
+  state.muted=!state.muted; save(); applyMute();
+  if(!state.muted) chime("ok");   /* confirm it is back on */
+});
+
+/* ============================================================
+   Sound — short synthesised tones, no audio files.
+   "Silent interfaces are bad", but sound is also the fastest way to make an
+   app unwelcome on a train. So: warm and quiet, only on user-initiated
+   actions, never autoplaying, and muteable from the header.
+   ============================================================ */
+var actx=null;
+function tone(freq,start,dur,vol){
+  try{
+    var o=actx.createOscillator(), g=actx.createGain();
+    o.type="sine"; o.frequency.value=freq;
+    o.connect(g); g.connect(actx.destination);
+    var t=actx.currentTime+start;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+0.015);          /* soft attack, no click */
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.start(t); o.stop(t+dur+0.02);
+  }catch(e){}
+}
+function chime(kind){
+  if(state.muted) return;
+  try{
+    if(!actx){ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; actx=new AC(); }
+    if(actx.state==="suspended") actx.resume();
+    if(kind==="ok"){                      /* a rising third — "yes, that" */
+      tone(587.33,0,0.18,0.13); tone(880.00,0.09,0.26,0.11);
+    } else if(kind==="win"){              /* an open arpeggio — arrival, not fanfare */
+      tone(523.25,0,0.24,0.12); tone(659.25,0.11,0.24,0.11);
+      tone(783.99,0.22,0.34,0.10); tone(1046.50,0.34,0.5,0.08);
+    } else if(kind==="badge"){            /* a small bell above the win */
+      tone(1318.51,0,0.3,0.07); tone(1760.00,0.1,0.42,0.05);
+    } else if(kind==="no"){               /* soft, low, brief — never harsh */
+      tone(196.00,0,0.16,0.07);
+    }
+  }catch(e){}
+}
+
+/* ---------- audio ---------- */
+var frVoice=null;
+function pickVoice(){
+  if(!window.speechSynthesis) return;
+  var vs=speechSynthesis.getVoices()||[];
+  frVoice=vs.filter(function(v){return /^fr/i.test(v.lang);})[0]||null;
+}
+if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(text,btn,rate){
+  if(!window.speechSynthesis) return;
+  stopAudio();     /* invalidate any running chain before cancelling, not after */
+  try{
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang="fr-FR"; if(frVoice) u.voice=frVoice; u.rate=rate||0.88;
+    if(btn){ btn.classList.add("playing");
+      u.onend=u.onerror=function(){ btn.classList.remove("playing"); }; }
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest?e.target.closest("[data-say]"):null;
+  if(b) speak(b.getAttribute("data-say"),b);
+});
+/* One place that truly stops everything. Cancelling a live utterance fires its
+   onend, so every chained sequence must be invalidated by token BEFORE cancel,
+   or the chain simply advances instead of stopping. */
+var seqRun=0;
+var storyReset=null;      /* set by the story card so its button label can be restored */
+function stopAudio(){
+  seqRun++;
+  storyPlaying=false;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  document.querySelectorAll(".playing").forEach(function(n){ n.classList.remove("playing"); });
+  document.querySelectorAll(".line.saying").forEach(function(n){ n.classList.remove("saying"); });
+  if(storyReset){ var f=storyReset; storyReset=null; f(); }   /* null first: stopStory calls back in */
+}
+/* Is there actually a French voice to speak with? */
+function hasVoice(){
+  return !!(window.speechSynthesis && (frVoice || (speechSynthesis.getVoices()||[]).length));
+}
+
+/* ---------- header ---------- */
+var xpNum=document.getElementById("xpNum"), pillXp=document.getElementById("pillXp"),
+    railFill=document.getElementById("railFill");
+document.getElementById("streakNum").textContent=state.streak;
+function renderXp(bump){
+  xpNum.textContent=state.xp;
+  if(bump){ pillXp.classList.remove("bump"); void pillXp.offsetWidth; pillXp.classList.add("bump"); }
+}
+function addXp(n){ state.xp+=n; save(); renderXp(true); }
+function setRail(p){ railFill.style.width=Math.max(6,Math.min(100,p))+"%"; }
+renderXp(false);
+
+function doneCount(){ var c=0; for(var k in state.done) if(state.done[k]) c++; return c; }
+function overallPct(){ return Math.round(doneCount()/LESSONS.length*100); }
+
+/* ---------- icons ---------- */
+var SPK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+var SPKSM='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>';
+var OK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>';
+var NO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>';
+var ARROW='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* ============================================================
+   Badges — two shelves, deliberately separated.
+   "Habit" is always reachable for someone who just came back after a gap;
+   "Skill" is there to strive for. A beginner should never open the app and
+   find nothing within reach — that is the failure mode the PRD names.
+   ============================================================ */
+var ICO={
+  step:'<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  flame:'<svg viewBox="0 0 24 24"><path d="M12 3c0 4-4 5-4 9a4 4 0 0 0 8 0c0-2-1-3-1-5 2 1 4 3 4 6a7 7 0 1 1-14 0c0-5 7-6 7-10z"/></svg>',
+  cal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  crown:'<svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4v10H3z"/></svg>',
+  check:'<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+  ear:'<svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 3-3 4-3 7a3 3 0 0 1-6 0"/><path d="M9 9a3 3 0 0 1 6 0"/></svg>',
+  spark:'<svg viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></svg>',
+  book:'<svg viewBox="0 0 24 24"><path d="M4 4h7v16H4zM13 4h7v16h-7z"/></svg>'
+};
+var BADGES=[
+  /* --- habit --- */
+  {id:"first", shelf:"habit", ico:"step",  t:"Premier pas",  d:"Finish your first lesson.",
+   test:function(){ return doneCount()>=1; }},
+  {id:"twoday",shelf:"habit", ico:"flame", t:"Deux jours",   d:"Come back a second day.",
+   test:function(){ return state.streak>=2; }},
+  {id:"week",  shelf:"habit", ico:"cal",   t:"Une semaine",  d:"Seven days in a row.",
+   test:function(){ return state.streak>=7; }},
+  {id:"all",   shelf:"habit", ico:"crown", t:"Le tour complet", d:"Finish all six lessons.",
+   test:function(){ return doneCount()>=LESSONS.length; }},
+  /* --- skill --- */
+  {id:"clean", shelf:"skill", ico:"check", t:"Sans faute",   d:"Finish a lesson without a single wrong order.",
+   test:function(){ return lessonErrors===0; }},
+  {id:"ear",   shelf:"skill", ico:"ear",   t:"Bonne oreille", d:"Answer the spoken question right first time.",
+   test:function(){ return replyFirstTry; }},
+  {id:"three", shelf:"skill", ico:"spark", t:"Trois d'affilée", d:"Build all three sentences with no mistakes.",
+   test:function(){ return lessonErrors===0 && buildsDone>=3; }},
+  {id:"half",  shelf:"skill", ico:"book",  t:"À mi-chemin",  d:"Reach Lesson 4 with a clean record.",
+   test:function(){ return doneCount()>=3 && lessonErrors===0; }}
+];
+
+/* per-lesson counters, reset by openLesson */
+var lessonErrors=0, replyFirstTry=true, buildsDone=0;
+
+function badgeWon(id){ return !!(state.badges&&state.badges[id]); }
+function awardBadges(){
+  if(!state.badges) state.badges={};
+  var fresh=[];
+  BADGES.forEach(function(b){
+    if(!state.badges[b.id] && b.test()){ state.badges[b.id]=true; fresh.push(b); }
+  });
+  if(fresh.length){ addXp(fresh.length*20); save(); }
+  return fresh;
+}
+function badgeHTML(b,won){
+  return '<div class="badge '+(won?"won":"locked")+'">'+
+    '<span class="ico" aria-hidden="true">'+ICO[b.ico]+'</span>'+
+    '<span><p class="bt" lang="fr">'+esc(b.t)+'</p>'+
+    '<p class="bd">'+esc(b.d)+'</p>'+
+    (won?'<span class="bs">Earned</span>':'')+'</span></div>';
+}
+/* The pull. An unfinished set is a more reliable motivator than a finished one,
+   which is why LinkedIn never lets a profile reach 100%. Shown only once there is
+   something to be partway through — nagging someone who has not started is just rude. */
+function renderStakes(){
+  var host=document.getElementById("stakes");
+  if(!host) return;
+  var done=doneCount(), total=LESSONS.length, left=total-done;
+  if(done===0){ host.hidden=true; return; }
+  host.hidden=false;
+
+  var pct=Math.round(done/total*100), R=25, C=2*Math.PI*R;
+  var big, sub;
+  if(left===0){
+    big="All six done."; sub="Your streak is the only thing left to keep. Come back tomorrow and it holds.";
+  } else if(left===1){
+    big="One lesson from the full set."; sub="You are closer than almost anyone who starts this.";
+  } else {
+    big=left+" lessons from the full set.";
+    sub="Next up: "+nextLesson().place+" — "+placeEn(nextLesson().place).toLowerCase()+".";
+  }
+
+  host.innerHTML=
+    '<span class="ring"><svg width="58" height="58" aria-hidden="true">'+
+      '<circle class="bg" cx="29" cy="29" r="'+R+'"></circle>'+
+      '<circle class="fg" cx="29" cy="29" r="'+R+'" stroke-dasharray="'+C+'" '+
+        'stroke-dashoffset="'+(C-(C*pct/100))+'"></circle>'+
+    '</svg><b>'+pct+'%</b></span>'+
+    '<span class="say"><p class="big">'+esc(big)+'</p><p class="sub">'+esc(sub)+'</p></span>';
+}
+
+function renderBadges(){
+  ["habit","skill"].forEach(function(shelf){
+    var host=document.getElementById(shelf==="habit"?"badgesHabit":"badgesSkill");
+    if(!host) return;
+    host.innerHTML=BADGES.filter(function(b){ return b.shelf===shelf; })
+      .map(function(b){ return badgeHTML(b,badgeWon(b.id)); }).join("");
+  });
+}
+
+/* The line the learner actually says — not whatever happens to end the dialogue.
+   Lesson 1's last line is the stranger's "Oui, un peu", which is not the lesson. */
+function keyLine(les){
+  var mine=les.story.filter(function(s){ return s.you; })[0];
+  return mine || les.story[les.story.length-1];
+}
+
+/* The shortest complete thing the lesson builds to — the first exercise's answer.
+   This is what a beginner should hear FIRST, before any words are taught.
+   Playing the full dialogue line here is three words of teaching and nine of noise. */
+function firstTarget(les){
+  var b=les.builds[0];
+  return { fr:b.tiles.map(function(t){ return t.fr; }).join(" "), en:b.en };
+}
+
+/* English for the French place names, so nothing on screen is unglossed. */
+var PLACE_EN={
+  "Dans la rue":"In the street",
+  "Au café":"At the cafe",
+  "À la boulangerie":"At the bakery",
+  "Le soir":"In the evening",
+  "Au marché":"At the market",
+  "À la terrasse":"On the terrace"
+};
+function placeEn(p){ return PLACE_EN[p]||""; }
+
+/* ============================================================
+   views
+   ============================================================ */
+var viewLanding=document.getElementById("viewLanding"),
+    viewLesson=document.getElementById("viewLesson");
+
+document.getElementById("heroLayer").style.backgroundImage="url('IMG_6334.jpeg')";
+
+/* ------------------------------------------------------------
+   routing — one route object, pushed to real browser history so the
+   phone back-gesture and the on-screen Back button do the same thing
+   ------------------------------------------------------------ */
+function route(){
+  return viewLesson.classList.contains("on")
+    ? {v:"lesson",id:L?L.id:1,stage:stage}
+    : {v:"landing"};
+}
+var historyWorks=true;
+var stack=0;              /* entries pushed above the seeded landing entry */
+
+function push(){
+  var r=route(); r.d=(r.v==="landing")?0:stack+1;
+  try{ history.pushState(r,""); stack=r.d; }catch(e){ historyWorks=false; }
+}
+function replace(){
+  var r=route(); r.d=stack;
+  try{ history.replaceState(r,""); }catch(e){ historyWorks=false; }
+}
+
+/* Leaving a lesson must UNWIND the stack, not pile a landing entry on top of it.
+   Otherwise browser-Back from the landing page walks forward into the lesson. */
+function goHome(){
+  stopAudio();
+  stack=0;
+  showLanding(false);
+  replace();
+}
+
+window.addEventListener("popstate",function(e){
+  var r=e.state;
+  stack=(r&&typeof r.d==="number")?r.d:0;
+  if(!r||r.v==="landing"){ showLanding(false); return; }
+  var lesson=LESSONS.filter(function(x){return x.id===r.id;})[0];
+  if(!lesson){ showLanding(false); return; }
+  openLesson(r.id,r.stage||0,false);
+});
+
+function showLanding(doPush){
+  stopAudio();
+  viewLanding.classList.add("on"); viewLesson.classList.remove("on");
+  setRail(overallPct());
+  renderMap();
+  renderStakes();
+  renderBadges();
+  var next=nextLesson();
+  document.getElementById("startLabel").textContent =
+    next ? (doneCount()?("Continue — Lesson "+next.id):"Start Lesson 1") : "Review the lessons";
+  window.scrollTo({top:0,behavior:reduced()?"auto":"smooth"});
+  focusEl(document.getElementById("heroTitle"));
+  if(doPush!==false) push();
+}
+function reduced(){ return window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches; }
+function focusEl(el){
+  if(!el) return;
+  el.setAttribute("tabindex","-1");
+  setTimeout(function(){ try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); } },60);
+}
+function nextLesson(){
+  for(var i=0;i<LESSONS.length;i++) if(!state.done[LESSONS[i].id]) return LESSONS[i];
+  return null;
+}
+
+/* ---------- lesson map ---------- */
+function renderMap(){
+  var map=document.getElementById("lessonMap");
+  map.innerHTML="";
+  LESSONS.forEach(function(L){
+    var b=document.createElement("button");
+    b.className="lcard"+(state.done[L.id]?" done":"");
+    b.innerHTML =
+      '<img class="thumb" src="'+esc(L.photo)+'" alt="" loading="lazy">'+
+      '<span class="meta">'+
+        '<span class="n">Lesson '+L.id+' · '+esc(placeEn(L.place)||L.place)+'</span>'+
+        '<span class="t" lang="fr">'+esc(L.title)+'</span>'+
+        '<span class="fr"><span lang="fr">'+esc(L.frame.fr)+'</span> — '+esc(L.frame.en)+'</span>'+
+        (state.done[L.id]?'<span class="tick">Completed</span>':'')+
+      '</span>';
+    b.addEventListener("click",function(){ openLesson(L.id); });
+    map.appendChild(b);
+  });
+}
+
+document.getElementById("startBtn").addEventListener("click",function(){
+  var n=nextLesson();
+  if(n){ openLesson(n.id); return; }
+  /* everything done — send them to the map rather than silently reopening Lesson 1 */
+  document.getElementById("lessonMap").scrollIntoView({behavior:reduced()?"auto":"smooth",block:"center"});
+});
+document.getElementById("brandBtn").addEventListener("click",goHome);
+
+/* ============================================================
+   lesson player
+   ============================================================ */
+var L=null, stage=0, buildIx=0;
+/* Order matters: do it first, name it after.
+   Understand → manipulate → then the grammar, as payoff rather than preamble. */
+var STAGES=["Scene","Words","Build","Why","Reply","Story"];
+
+function openLesson(id,atStage,doPush){
+  stopAudio();
+  L=LESSONS.filter(function(x){return x.id===id;})[0];
+  if(!L) return;
+  stage=atStage||0; buildIx=0;
+  if(!atStage){ lessonErrors=0; replyFirstTry=true; buildsDone=0; }
+  document.getElementById("bannerImg").src=L.photo;
+  document.getElementById("bannerImg").alt=L.alt||"";
+  document.getElementById("bannerPlace").textContent=
+    "Lesson "+L.id+" · "+L.place+(placeEn(L.place)?" — "+placeEn(L.place):"");
+  document.getElementById("lessonTitle").textContent=L.title;
+  viewLanding.classList.remove("on"); viewLesson.classList.add("on");
+  window.scrollTo({top:0,behavior:reduced()?"auto":"smooth"});
+  renderStage(true);
+  focusEl(document.getElementById("lessonTitle"));
+  if(doPush!==false) push();
+}
+
+function markSteps(){
+  for(var i=0;i<6;i++){
+    var d=document.getElementById("s"+i);
+    d.className = i<stage ? "done" : (i===stage ? "now" : "");
+  }
+  document.getElementById("stepLabel").textContent =
+    stage>=6 ? "Lesson complete" : (STAGES[stage]+" · "+(stage+1)+" of 6");
+}
+
+function nextStage(){
+  stopAudio();
+  stage++; buildIx=0;
+  renderStage();
+  push();
+  document.querySelector(".stage").scrollIntoView({behavior:reduced()?"auto":"smooth",block:"start"});
+}
+
+/* Back: one step within the lesson, then out to the lesson list.
+   This drives state DIRECTLY and never calls history.back(). On a file:// page
+   history.back() either throws or walks the browser out of the app, which is
+   exactly the "button does nothing" failure. History is kept in sync afterwards
+   so the phone back-gesture still lands somewhere sane, but the visible button
+   never depends on it. */
+function goBack(){
+  stopAudio();
+
+  /* Build is three sentences inside one stage. Step back through them
+     individually — jumping the whole stage was making people redo all three. */
+  if(stage===2 && buildIx>0){
+    buildIx--;
+    var body=document.getElementById("stageBody");
+    body.innerHTML=""; body.appendChild(buildCard());
+    markSteps(); setBackLabel();
+    focusEl(body.querySelector("h3"));
+    document.querySelector(".stage").scrollIntoView({behavior:reduced()?"auto":"smooth",block:"start"});
+    return;
+  }
+
+  if(stage<=0){ goHome(); return; }
+
+  stage--;
+  /* Landing back on Build should return you to the LAST sentence, not the first. */
+  buildIx = (stage===2) ? L.builds.length-1 : 0;
+  renderStage();
+  if(stack>0) stack--;
+  replace();
+  document.querySelector(".stage").scrollIntoView({behavior:reduced()?"auto":"smooth",block:"start"});
+}
+
+/* Always reads "Back". A back control should look the same everywhere;
+   where it goes belongs in the hint, not the label. */
+function setBackLabel(){
+  var where = (stage===2 && buildIx>0) ? ("sentence "+buildIx)
+            : stage>0 ? STAGES[stage-1].toLowerCase()
+            : "all lessons";
+  document.getElementById("stageBackLabel").textContent="Back";
+  var hint=document.getElementById("stageBackHint");
+  if(hint) hint.textContent=where;
+  document.getElementById("stageBack").setAttribute("aria-label","Back to "+where);
+}
+
+function renderStage(fromOpen){
+  markSteps();
+  setBackLabel();
+  var b=document.getElementById("stageBody");
+  b.innerHTML="";
+  if(stage===0) b.appendChild(sceneCard());
+  else if(stage===1){ b.appendChild(wordsCard()); b.appendChild(cardsCard()); }
+  else if(stage===2) b.appendChild(buildCard());
+  else if(stage===3) b.appendChild(patternCard());
+  else if(stage===4) b.appendChild(respondCard());
+  else if(stage===5) b.appendChild(storyCard());
+  else b.appendChild(doneCard());
+  /* openLesson focuses the lesson title itself — do not race it */
+  if(!fromOpen){ var h=b.querySelector("h3"); if(h) focusEl(h); }
+}
+
+function el(html){ var d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstChild; }
+
+function nextBtn(label){
+  var w=document.createElement("div"); w.className="actions";
+  var btn=document.createElement("button"); btn.className="btn";
+  btn.innerHTML=esc(label)+ARROW;
+  btn.addEventListener("click",nextStage);
+  w.appendChild(btn);
+  var back=document.createElement("button"); back.className="btn ghost";
+  back.textContent="All lessons";
+  back.addEventListener("click",goHome);
+  w.appendChild(back);
+  return w;
+}
+
+/* ---- stage 0: scene ---- */
+function sceneCard(){
+  var c=el('<div class="card"><h3><span lang="fr">'+esc(L.place)+'</span>'+
+    (placeEn(L.place)?' <span style="color:var(--muted);font-weight:400">— '+esc(placeEn(L.place))+'</span>':'')+
+    '</h3></div>');
+  c.appendChild(el('<p class="scene-line">'+esc(L.sceneLine)+'</p>'));
+  c.appendChild(el('<div class="frame-box">'+
+    '<p class="frame-fr">'+L.frame.fr.replace(/___/g,'<span class="blank">___</span>')+'</p>'+
+    '<p class="frame-en">'+esc(L.frame.en)+'</p></div>'));
+  c.appendChild(el('<p class="hint-copy" style="margin-top:var(--s4)">That blank is the whole point. Everything else stays where it is.</p>'));
+
+  /* One short sentence, slowly. Not the dialogue. */
+  var t=firstTarget(L);
+  var prev=el('<div class="frame-box" style="margin-top:var(--s4)">'+
+    '<p class="frame-fr" lang="fr">'+esc(t.fr)+'</p>'+
+    '<p class="frame-en">'+esc(t.en)+'</p></div>');
+  c.appendChild(prev);
+  c.appendChild(el('<p class="hint-copy" style="margin-top:var(--s3)">By the end of this screen set, you will build that yourself.</p>'));
+
+  var hear=document.createElement("div"); hear.className="actions";
+  var hb=document.createElement("button"); hb.className="btn secondary";
+  hb.innerHTML=SPK+"Hear it slowly";
+  hb.addEventListener("click",function(){ speak(t.fr,hb,0.72); });
+  hear.appendChild(hb);
+  c.appendChild(hear);
+  c.appendChild(nextBtn("Show me the words"));
+  return c;
+}
+
+/* ---- stage 1: pattern ---- */
+function patternCard(){
+  var H=L.headline;
+  var c=el('<div class="card"><h3>'+esc(H.title)+'</h3></div>');
+  c.appendChild(el('<p class="hint-copy"><b>You just said all of that.</b> Here is what was going on underneath it.</p>'));
+  H.body.forEach(function(p){ c.appendChild(el('<p class="hint-copy">'+p+'</p>')); });
+  if(H.table){
+    var rows=H.table.map(function(r){
+      return '<tr class="'+(r[2]?"same":"")+'"><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';
+    }).join("");
+    c.appendChild(el('<table class="sound"><thead><tr><th>Written</th><th>Sounds like</th></tr></thead><tbody>'+rows+'</tbody></table>'));
+    var say=document.createElement("div"); say.className="actions";
+    var sb=document.createElement("button"); sb.className="btn secondary";
+    sb.innerHTML=SPK+"Hear them in order";
+    sb.addEventListener("click",function(){ speakList(H.table.map(function(r){return r[0];}),sb); });
+    say.appendChild(sb); c.appendChild(say);
+  }
+  if(L.note){
+    var n=el('<div class="callout"><p><b>'+esc(L.note.title)+'</b></p></div>');
+    L.note.body.forEach(function(p){ n.appendChild(el("<p>"+p+"</p>")); });
+    c.appendChild(n);
+  }
+  c.appendChild(nextBtn("Now listen and reply"));
+  return c;
+}
+
+function speakList(list,btn){
+  stopAudio();
+  var my=seqRun;
+  btn.classList.add("playing");
+  var i=0;
+  (function go(){
+    if(my!==seqRun||i>=list.length){ btn.classList.remove("playing"); return; }
+    try{
+      var u=new SpeechSynthesisUtterance(list[i]);
+      u.lang="fr-FR"; if(frVoice) u.voice=frVoice; u.rate=0.85;
+      u.onend=function(){ i++; setTimeout(go,260); };
+      u.onerror=function(){ btn.classList.remove("playing"); };
+      speechSynthesis.speak(u);
+    }catch(e){ btn.classList.remove("playing"); }
+  })();
+}
+
+/* ---- stage 2: words + cards ---- */
+function wordsCard(){
+  var c=el('<div class="card"><h3>The words</h3></div>');
+  c.appendChild(el('<p class="hint-copy">Tap any row to hear it. The colour of the bar is the word’s gender.</p>'));
+  var v=document.createElement("div"); v.className="vocab";
+  L.vocab.forEach(function(w){
+    var row=document.createElement("button");
+    row.className="vrow "+(w.g||"n");
+    row.setAttribute("data-say",w.fr.split(" / ")[0]);
+    row.setAttribute("aria-label","Hear "+w.fr+", meaning "+w.en);
+    row.innerHTML='<span class="fr" lang="fr">'+esc(w.fr)+'</span>'+
+      '<span class="en">'+esc(w.en)+'</span>'+
+      '<span class="say">'+esc(w.say)+'</span>'+
+      '<span class="speak sm" aria-hidden="true">'+SPKSM+'</span>';
+    v.appendChild(row);
+  });
+  c.appendChild(v);
+  c.appendChild(el('<div class="gender-key">'+
+    '<span><i style="background:var(--subject)"></i>masculine (un)</span>'+
+    '<span><i style="background:var(--verb)"></i>feminine (une)</span>'+
+    '<span><i style="background:var(--muted)"></i>neither</span></div>'));
+  return c;
+}
+
+function cardsCard(){
+  var c=el('<div class="card"><h3>Say them back</h3></div>');
+  var anyPhoto=L.cards.some(function(x){return x.photo;});
+  var audio=hasVoice();
+  c.appendChild(el('<p class="hint-copy">'+
+    (!audio ? "No French voice is available on this device, so these cards show the spelling-out instead. Read each one aloud."
+     : anyPhoto ? "Tap each card, listen, and say it out loud. The picture is doing the remembering for you."
+     : "These are ideas rather than objects, so there is nothing to photograph. Tap, listen, repeat aloud.")+
+    '</p>'));
+  var g=document.createElement("div"); g.className="cards-grid";
+  L.cards.forEach(function(card){
+    var b=document.createElement("button");
+    b.className="fcard";
+    b.setAttribute("data-say",card.fr);
+    b.setAttribute("aria-label","Hear "+card.fr+", meaning "+card.en);
+    /* fall back to the respelling from the vocab list when there is no voice */
+    var v=L.vocab.filter(function(w){ return w.fr===card.fr||w.fr.indexOf(card.fr)===0; })[0];
+    var sayHint=(!audio&&v&&v.say)?'<span class="ce" style="font-style:italic">'+esc(v.say)+'</span>':'';
+    b.innerHTML=(card.photo?'<img src="'+esc(card.photo)+'" alt="'+esc(card.alt||"")+'" loading="lazy">':'')+
+      '<span class="cap"><span class="cf" lang="fr">'+esc(card.fr)+'</span>'+
+      '<span class="ce">'+esc(card.en)+'</span>'+sayHint+
+      (audio?'<span class="spk" aria-hidden="true">'+SPKSM+'</span>':'')+'</span>';
+    b.addEventListener("click",function(){ b.classList.add("heard"); });
+    g.appendChild(b);
+  });
+  c.appendChild(g);
+  c.appendChild(nextBtn("Build a sentence"));
+  return c;
+}
+
+/* ---- stage 3: build ---- */
+var placed=[], bankEl=null, slotsEl=null, fbEl=null, checkEl=null;
+
+function buildCard(){
+  var B=L.builds[buildIx];
+  placed=[];
+  var c=el('<div class="card"><h3>Build it — '+(buildIx+1)+' of '+L.builds.length+'</h3></div>');
+  c.appendChild(el('<p class="target">'+esc(B.en)+'</p>'));
+  c.appendChild(el('<p class="hint-copy">Tap the pieces in order. Tap a placed piece to send it back.</p>'));
+
+  slotsEl=el('<div class="slots" aria-label="Your sentence"><span class="empty">Your sentence appears here</span></div>');
+  c.appendChild(slotsEl);
+  c.appendChild(el('<p class="bank-label">Pieces</p>'));
+  bankEl=el('<div class="bank" aria-label="Sentence pieces"></div>');
+  c.appendChild(bankEl);
+  fbEl=el('<p class="feedback" role="status" aria-live="polite"></p>');
+  c.appendChild(fbEl);
+
+  var acts=document.createElement("div"); acts.className="actions";
+  checkEl=document.createElement("button");
+  checkEl.className="btn secondary"; checkEl.textContent="Check it"; checkEl.disabled=true;
+  checkEl.addEventListener("click",checkBuild);
+  acts.appendChild(checkEl);
+  var re=document.createElement("button"); re.className="btn ghost"; re.textContent="Start over";
+  re.addEventListener("click",function(){ placed=[]; clearMark(); renderBank(); renderSlots(); });
+  acts.appendChild(re);
+  c.appendChild(acts);
+
+  setTimeout(function(){ renderBank(); renderSlots(); },0);
+  return c;
+}
+
+function shuffledIdx(n){
+  var o=[],i;
+  for(i=0;i<n;i++) o.push(i);
+  var tries=0;
+  do{
+    for(i=o.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=o[i]; o[i]=o[j]; o[j]=t; }
+    tries++;
+  } while(tries<20 && o.every(function(v,k){return v===k;}));
+  return o;
+}
+
+function renderBank(){
+  var B=L.builds[buildIx];
+  bankEl.innerHTML="";
+  shuffledIdx(B.tiles.length).forEach(function(ix){
+    var t=B.tiles[ix];
+    var b=document.createElement("button");
+    b.className="tile t-"+t.r;
+    b.textContent=t.fr;
+    b.lang="fr";
+    b.setAttribute("data-ix",ix);
+    b.setAttribute("aria-label","Add "+t.fr);
+    b.addEventListener("click",function(){
+      if(placed.indexOf(ix)!==-1) return;
+      clearMark(); placed.push(ix);
+      b.classList.add("spent"); b.disabled=true;   /* out of the tab order too */
+      renderSlots();
+      if(placed.length===B.tiles.length) checkEl.focus();
+    });
+    bankEl.appendChild(b);
+  });
+}
+
+function renderSlots(){
+  var B=L.builds[buildIx];
+  slotsEl.querySelectorAll(".tile").forEach(function(n){ n.remove(); });
+  var em=slotsEl.querySelector(".empty");
+  if(em) em.hidden=placed.length>0;
+  placed.forEach(function(ix,pos){
+    var t=B.tiles[ix];
+    var b=document.createElement("button");
+    b.className="tile placed t-"+t.r;
+    b.textContent=t.fr;
+    b.lang="fr";
+    b.setAttribute("aria-label","Remove "+t.fr+" from position "+(pos+1));
+    b.addEventListener("click",function(){
+      clearMark(); placed.splice(pos,1);
+      var src=bankEl.querySelector('[data-ix="'+ix+'"]');
+      if(src){ src.classList.remove("spent"); src.disabled=false; src.focus(); }
+      renderSlots();
+    });
+    slotsEl.appendChild(b);
+  });
+  checkEl.disabled=placed.length!==B.tiles.length;
+}
+
+function clearMark(){
+  slotsEl.classList.remove("good","bad","shake");
+  fbEl.className="feedback"; fbEl.innerHTML="";
+}
+
+function checkBuild(){
+  var B=L.builds[buildIx];
+  var right=placed.every(function(v,i){ return v===i; });
+  var sentence=B.tiles.map(function(t){return t.fr;}).join(" ");
+
+  if(right){
+    slotsEl.classList.add("good");
+    fbEl.className="feedback ok";
+    fbEl.innerHTML=OK+"<span>"+esc(sentence)+(B.after?"":" — exactly right.")+"</span>";
+    chime("ok");
+    speak(sentence);
+    addXp(10);
+    buildsDone++;
+    if(B.after){
+      var n=el('<div class="callout"><p>'+B.after+'</p></div>');
+      fbEl.parentNode.insertBefore(n,fbEl.nextSibling);
+    }
+    checkEl.disabled=true;
+    var acts=fbEl.parentNode.querySelector(".actions");
+    acts.innerHTML="";
+    var go=document.createElement("button"); go.className="btn";
+    var last=buildIx>=L.builds.length-1;
+    go.innerHTML=(last?"Why that works":"Next sentence")+ARROW;
+    go.addEventListener("click",function(){
+      if(last){ nextStage(); }
+      else { buildIx++; stopAudio(); var body=document.getElementById("stageBody");
+             body.innerHTML=""; body.appendChild(buildCard()); markSteps(); setBackLabel();
+             focusEl(body.querySelector("h3")); }
+    });
+    acts.appendChild(go);
+    return;
+  }
+
+  var mine=placed.map(function(i){return B.tiles[i].fr;});
+  var want=B.tiles.map(function(t){return t.fr;});
+  var bad=0; while(bad<mine.length && mine[bad]===want[bad]) bad++;
+  var need=B.tiles[bad];
+  var role={subject:"subject — who is doing it",verb:"verb — the action",
+            object:"object — what it lands on",extra:"extra piece"}[need.r]||"next piece";
+  var msg = bad===0
+    ? "French starts with who is doing it. Position 1 wants the "+role+"."
+    : "Position "+(bad+1)+" wants the "+role+".";
+
+  lessonErrors++;
+  chime("no");
+  slotsEl.classList.add("bad");
+  if(!reduced()) slotsEl.classList.add("shake");
+  fbEl.className="feedback no";
+  fbEl.innerHTML=NO+"<span>"+esc(msg)+" Tap a piece to send it back.</span>";
+  setTimeout(function(){ slotsEl.classList.remove("shake"); },400);
+}
+
+/* ---- stage 4: respond ---- */
+function respondCard(){
+  var R=L.respond;
+  var c=el('<div class="card"><h3>Listen, then reply</h3></div>');
+  c.appendChild(el('<p class="hint-copy">Someone speaks to you. Choose what you would say back.</p>'));
+
+  var p=el('<div class="prompt"></div>');
+  var q=el('<p class="q">'+esc(R.q)+'</p>');
+  p.appendChild(q);
+  var sb=document.createElement("button");
+  sb.className="speak"; sb.setAttribute("aria-label","Hear the question again");
+  sb.innerHTML=SPK;
+  sb.addEventListener("click",function(){ speak(R.q,sb); });
+  p.appendChild(sb);
+  c.appendChild(p);
+  c.appendChild(el('<p class="hint-copy" style="margin-top:var(--s2)">'+esc(R.en)+'</p>'));
+
+  var box=document.createElement("div"); box.className="opts";
+  var fb=el('<p class="feedback" role="status" aria-live="polite"></p>');
+  var answered=false;
+
+  R.opts.forEach(function(o){
+    var b=document.createElement("button");
+    b.className="opt"; b.textContent=o.fr; b.lang="fr";
+    b.addEventListener("click",function(){
+      if(answered) return;
+      if(!o.ok){
+        /* A wrong tap costs the option, not the question. Try again. */
+        replyFirstTry=false;
+        b.classList.add("wrong");
+        b.disabled=true;
+        fb.className="feedback no";
+        fb.innerHTML=NO+"<span>"+esc(o.why||"Not this one.")+" Try another.</span>";
+        var live=box.querySelector(".opt:not([disabled])");
+        if(live) live.focus();
+        return;
+      }
+      answered=true;
+      Array.prototype.forEach.call(box.children,function(x){ x.disabled=true; });
+      b.classList.add("right");
+      fb.className="feedback ok";
+      fb.innerHTML=OK+"<span>That is the one. Say it out loud once.</span>";
+      speak(o.fr);
+      addXp(15);
+      if(R.after){
+        var n=el('<div class="callout"><p>'+R.after+'</p></div>');
+        fb.parentNode.insertBefore(n,fb.nextSibling);
+      }
+      var acts=c.querySelector(".actions");
+      acts.innerHTML="";
+      var go=document.createElement("button"); go.className="btn";
+      go.innerHTML="Hear the whole scene"+ARROW;
+      go.addEventListener("click",nextStage);
+      acts.appendChild(go);
+    });
+    box.appendChild(b);
+  });
+
+  c.appendChild(box);
+  c.appendChild(fb);
+  var acts=document.createElement("div"); acts.className="actions";
+  acts.appendChild(el('<span class="hint-copy" style="margin:0">Pick one to continue.</span>'));
+  c.appendChild(acts);
+
+  /* No autoplay. Nobody wants their phone speaking French on a train. */
+  return c;
+}
+
+/* ---- stage 5: story ---- */
+var storyPlaying=false;
+function storyCard(){
+  var c=el('<div class="card"><h3>The whole exchange</h3></div>');
+  c.appendChild(el('<p class="hint-copy">Everything you just built, end to end, at cafe speed.</p>'));
+  var box=document.createElement("div"); box.className="lines";
+  L.story.forEach(function(s){
+    var p=document.createElement("p");
+    p.className="line"+(s.you?" you":"");
+    p.innerHTML='<span class="who">'+esc(s.who)+'</span>'+
+                '<span lang="fr">'+esc(s.fr)+'</span>'+
+                '<span class="en">'+esc(s.en)+'</span>';
+    box.appendChild(p);
+  });
+  c.appendChild(box);
+
+  var acts=document.createElement("div"); acts.className="actions";
+  var play=document.createElement("button"); play.className="btn";
+  play.innerHTML=SPK+'<span>Play the exchange</span>';
+  play.addEventListener("click",function(){
+    if(storyPlaying){ stopStory(box,play); return; }
+    stopAudio();
+    storyPlaying=true;
+    play.querySelector("span").textContent="Stop";
+    storyReset=function(){ var s=play.querySelector("span"); if(s) s.textContent="Play the exchange"; };
+    playStory(0,box,play,seqRun);
+  });
+  acts.appendChild(play);
+
+  var go=document.createElement("button"); go.className="btn secondary";
+  go.innerHTML="Finish the lesson"+ARROW;
+  go.addEventListener("click",function(){ stopStory(box,play); nextStage(); });
+  acts.appendChild(go);
+  c.appendChild(acts);
+  return c;
+}
+function stopStory(box,btn){
+  storyPlaying=false; stopAudio();
+  box.querySelectorAll(".line").forEach(function(l){ l.classList.remove("saying"); });
+  if(btn){ btn.classList.remove("playing"); var s=btn.querySelector("span"); if(s) s.textContent="Play the exchange"; }
+}
+function playStory(i,box,btn,token){
+  if(!storyPlaying||token!==seqRun) return;
+  if(i>=L.story.length){ stopStory(box,btn); return; }
+  box.querySelectorAll(".line").forEach(function(l){ l.classList.remove("saying"); });
+  var lines=box.querySelectorAll(".line");
+  if(lines[i]) lines[i].classList.add("saying");
+  if(!window.speechSynthesis){ stopStory(box,btn); return; }
+  try{
+    var u=new SpeechSynthesisUtterance(L.story[i].fr);
+    u.lang="fr-FR"; if(frVoice) u.voice=frVoice; u.rate=0.86;
+    u.onend=function(){ setTimeout(function(){ playStory(i+1,box,btn,token); },450); };
+    u.onerror=function(){ stopStory(box,btn); };
+    speechSynthesis.speak(u);
+  }catch(e){ stopStory(box,btn); }
+}
+
+/* ---- stage 6: done ---- */
+function doneCard(){
+  var first=!state.done[L.id];
+  if(first){ state.done[L.id]=true; addXp(25); save(); }
+  setRail(overallPct());
+  var fresh=awardBadges();
+  chime("win");
+  if(fresh.length) setTimeout(function(){ chime("badge"); },620);
+
+  var c=el('<div class="card win"><p class="crest" lang="fr">'+esc(keyLine(L).fr)+'</p></div>');
+  c.appendChild(el('<p class="hint-copy" style="margin-top:calc(var(--s3) * -1)">'+esc(keyLine(L).en)+'</p>'));
+  c.appendChild(el('<h3>Lesson '+L.id+' done.</h3>'));
+  c.appendChild(el('<p class="hint-copy">'+esc(L.close)+'</p>'));
+
+  /* Say what the numbers MEAN, not just what they are. */
+  var words=0; LESSONS.forEach(function(x){ if(state.done[x.id]) words+=x.vocab.length; });
+  c.appendChild(el('<div class="win-stats">'+
+    '<div class="stat"><span class="n">'+words+'</span><span class="k">French words you can use</span></div>'+
+    '<div class="stat"><span class="n">'+doneCount()+'/'+LESSONS.length+'</span><span class="k">Scenes you can handle</span></div>'+
+    '<div class="stat"><span class="n">'+state.streak+'</span><span class="k">'+
+      (state.streak===1?"Day — come back tomorrow":"Days in a row")+'</span></div></div>'));
+
+  if(fresh.length){
+    c.appendChild(el('<p class="shelf-note" style="margin-top:var(--s4)">'+
+      (fresh.length===1?"New badge":"New badges")+' &middot; +'+(fresh.length*20)+' XP</p>'));
+    var nb=el('<div class="badges new-badges"></div>');
+    nb.innerHTML=fresh.map(function(b){ return badgeHTML(b,true); }).join("");
+    c.appendChild(nb);
+  }
+
+  var acts=document.createElement("div"); acts.className="actions";
+  var nx=LESSONS.filter(function(x){return x.id===L.id+1;})[0];
+  if(nx){
+    var b=document.createElement("button"); b.className="btn";
+    b.innerHTML="Lesson "+nx.id+" · "+esc(nx.place)+ARROW;
+    b.addEventListener("click",function(){ openLesson(nx.id); });
+    acts.appendChild(b);
+  }
+  var again=document.createElement("button"); again.className="btn ghost";
+  again.textContent="Do this one again";
+  again.addEventListener("click",function(){ openLesson(L.id); });
+  acts.appendChild(again);
+  var home=document.createElement("button"); home.className="btn ghost";
+  home.textContent="All lessons";
+  home.addEventListener("click",goHome);
+  acts.appendChild(home);
+  c.appendChild(acts);
+  return c;
+}
+
+/* ---- boot ---- */
+document.getElementById("stageBack").addEventListener("click",goBack);
+renderMap();
+renderStakes();
+renderBadges();
+setRail(overallPct());
+showLanding(false);
+replace();   /* seed history so the first Back has somewhere to land */
+window.addEventListener("pagehide",function(){ save(); stopAudio(); });
+document.addEventListener("visibilitychange",function(){ if(document.hidden){ save(); stopAudio(); } });
+</script>
+</body>
+</html>
